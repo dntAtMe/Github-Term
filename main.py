@@ -1,10 +1,12 @@
 import pathlib
 
+# TODO: Create config if empty folder exists
 configFile = "config.json"
-path = pathlib.Path(str(pathlib.Path.home()) + "/.termhub")
+path = pathlib.Path.home() / '.termhub'
+print(path)
+filepath = path / configFile
 if not path.exists():
     path.mkdir()
-filepath = path / configFile
+    filepath.touch()
 with filepath.open("r", encoding="utf-8") as f:
-    print(f.read())
-print(path)
+    f.readable()
