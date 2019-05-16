@@ -2,6 +2,8 @@ import pathlib
 
 
 class Config:
+    """Stores User API Key and app configuration"""
+
     def __init__(self): pass
 
     def load(self, json): pass
@@ -11,12 +13,36 @@ def create_default_config_file():
     pass
 
 
+def create_custom_config_file():
+    pass
+
+
 def load_config():
     pass
 
 
 def write_config(config, file):
     pass
+
+
+def start():
+    answer = ""
+    while answer != "Y" and answer != "N":
+        if not config_file_exists():
+            answer = input("Create default config file? (Y/N)")
+        else:
+            break
+    if answer == "Y":
+        create_default_config_file()
+    else:
+        create_custom_config_file()
+    read_config_file()
+
+
+def config_file_exists(path=pathlib.Path.home() / '.termhub', config='config.json'):
+    if not path.exists() or not (path / config).exists():
+        return False
+    return True
 
 
 def read_config_file(path=pathlib.Path.home() / '.termhub', config='config.json'):
@@ -34,4 +60,4 @@ def read_config_file(path=pathlib.Path.home() / '.termhub', config='config.json'
 
 
 if __name__ == '__main__':
-    read_config_file()
+    start()
