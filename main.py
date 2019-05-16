@@ -1,5 +1,5 @@
 import pathlib
-
+import json
 
 class Config:
     """Stores User API Key and app configuration"""
@@ -10,7 +10,22 @@ class Config:
 
 
 def create_default_config_file():
-    pass
+    path = pathlib.Path.home() / '.termhub'
+    config='config.json'
+
+    if not path.exists():
+        path.mkdir()
+
+    filepath = path / config
+
+    # TODO: Fix temporary solution
+    filepath.touch()
+
+    data = {}
+    data['token'] = input("Personal access token: ") 
+
+    with filepath.open("w", encoding="utf-8") as file:
+        json.dump(data, file)
 
 
 def create_custom_config_file():
@@ -29,7 +44,7 @@ def start():
     answer = ""
     while answer != "Y" and answer != "N":
         if not config_file_exists():
-            answer = input("Create default config file? (Y/N)")
+            answer = input("Create default config file? (Y/N)").upper()
         else:
             break
     if answer == "Y":
@@ -46,14 +61,11 @@ def config_file_exists(path=pathlib.Path.home() / '.termhub', config='config.jso
 
 
 def read_config_file(path=pathlib.Path.home() / '.termhub', config='config.json'):
-    if not path.exists():
-        path.mkdir()
     filepath = path / config
 
     if not filepath.exists():
         create_default_config_file()
         # TODO: Fix temporary solution
-        filepath.touch()
 
     with filepath.open("r", encoding="utf-8") as file:
         print(file.read())
