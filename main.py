@@ -2,6 +2,27 @@ import pathlib
 import json
 import requests
 
+class Query:
+    def __init__(self, content = ''):
+        self.content = content
+
+    @staticmethod
+    def build_query():
+        return Query()
+
+    def build_viewer(self, *args):
+
+        args = ' '.join(args)
+        self.content += 'viewer {{ {} }}'.format(args)
+        return self
+
+    def wrap(self):
+        self.content = '{{ {} }}'.format(self.content)
+        return self
+
+    def __str__(self):
+        json.dumps(self.content)
+
 
 def run_query(query):
     """Runs given GraphQL query in GitHub API"""
@@ -113,6 +134,7 @@ if __name__ == '__main__':
       } 
     }
     """
-
-    result = run_query(query)  # Execute the query
-    print(json.dumps(result, indent=4))
+    query = Query.build_query().build_viewer("id", "login").wrap()
+    print(str(query.content))
+    result = run_query(query.content)  # Execute the query
+    print(result)
