@@ -1,5 +1,16 @@
 import pathlib
 import json
+import requests
+
+
+def run_query(query):
+    """Runs given GraphQL query in GitHub API"""
+    headers = {"Authorization": "Bearer {}".format(get_token())}
+    request = requests.post('https://api.github.com/graphql', json={'query': query}, headers=headers)
+    if request.status_code == 200:
+        return request.json()
+    else:
+        raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
 
 class Config:
     """Stores User API Key and app configuration"""
@@ -22,7 +33,7 @@ def create_default_config_file():
     filepath.touch()
 
     data = {}
-    data['token'] = input("Personal access token: ") 
+    data['token'] = input("Personal access token: ")
 
     with filepath.open("w", encoding="utf-8") as file:
         json.dump(data, file)
@@ -59,6 +70,18 @@ def config_file_exists(path=pathlib.Path.home() / '.termhub', config='config.jso
         return False
     return True
 
+def get_token(path=pathlib.Path.home() / '.termhub', config='config.json'):
+    filepath = path / config
+    data = {}
+
+    if not filepath.exists():
+        create_default_config_file()
+        # TODO: Fix temporary solution
+
+    with filepath.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data['token']
+
 
 def read_config_file(path=pathlib.Path.home() / '.termhub', config='config.json'):
     filepath = path / config
@@ -73,3 +96,23 @@ def read_config_file(path=pathlib.Path.home() / '.termhub', config='config.json'
 
 if __name__ == '__main__':
     start()
+    query = """
+    {
+      viewer {
+        repositories(first:100) {
+          nodes {
+            name
+                    issues(first:100) {
+                nodes {
+                title
+                body
+              }  
+            }       
+          }
+        }
+      } 
+    }
+    """
+
+    result = run_query(query)  # Execute the query
+    print(json.dumps(result, indent=4))
