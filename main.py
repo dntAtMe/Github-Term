@@ -18,7 +18,7 @@ class Query:
 
     def wrap(self):
         self.content = '{{ {} }}'.format(self.content)
-        return self
+        return self.content
 
     def __str__(self):
         json.dumps(self.content)
@@ -32,6 +32,7 @@ def run_query(query):
         return request.json()
     else:
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
+
 
 class Config:
     """Stores User API Key and app configuration"""
@@ -91,6 +92,7 @@ def config_file_exists(path=pathlib.Path.home() / '.termhub', config='config.jso
         return False
     return True
 
+
 def get_token(path=pathlib.Path.home() / '.termhub', config='config.json'):
     filepath = path / config
     data = {}
@@ -135,6 +137,6 @@ if __name__ == '__main__':
     }
     """
     query = Query.build_query().build_viewer("id", "login").wrap()
-    print(str(query.content))
-    result = run_query(query.content)  # Execute the query
+    print(query)
+    result = run_query(query)  # Execute the query
     print(result)
